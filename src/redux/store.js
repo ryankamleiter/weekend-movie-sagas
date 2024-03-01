@@ -7,6 +7,7 @@ import axios from 'axios';
 // Create the rootSaga generator function
 function* rootSaga() {
   yield takeEvery('FETCH_MOVIES', fetchAllMovies);
+  yield takeEvery('NAVIGATE_TO_DETAILS', handleDetailsNav);
 }
 
 function* fetchAllMovies() {
@@ -21,6 +22,14 @@ function* fetchAllMovies() {
   } catch (error) {
     console.log('fetchAllMovies error:', error);
   }
+}
+
+function* handleDetailsNav(action) {
+  const { id } = action.payload;
+  yield put({
+    type: 'DETAILS_GO',
+    payload: { id }
+  })
 }
 
 // Create sagaMiddleware
