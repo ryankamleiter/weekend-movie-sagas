@@ -1,14 +1,15 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import logger from 'redux-logger';
 import createSagaMiddleware from 'redux-saga';
-import { takeEvery, put } from 'redux-saga/effects';
+import { takeEvery, put, select } from 'redux-saga/effects';
 import axios from 'axios';
 
 // Create the rootSaga generator function
 function* rootSaga() {
   yield takeEvery('FETCH_MOVIES', fetchAllMovies);
   yield takeEvery('NAVIGATE_TO_DETAILS', handleDetailsNav);
-  yield takeEvery('FETCH_DETAILS', fetchMovieDetails)
+  yield takeEvery('FETCH_DETAILS', fetchMovieDetails);
+  yield takeEvery('FETCH_GENRES', fetchGenres); 
 }
 
 function* fetchAllMovies() {
@@ -24,14 +25,27 @@ function* fetchAllMovies() {
     console.log('fetchAllMovies error:', error);
   }
 }
-function* fetchMovieDetails(action) {
+function* fetchMovieDetails() {
   try {
     
-    const response = yield axios.get(`/api/movies/${action.payload}`);
+    const response = yield axios.get(`/api/movies`);
     console.log('Movie ID:', );
     yield put({ type: 'SET_MOVIE_DETAILS', payload: response.data })
   } catch (error) {
     console.log('fetchMovieDetails error:', error);
+  }
+}
+
+function* fetchGenres() {
+  try {
+    const genresResponse = yield axios.get('/api/genres');
+    console.log('genres response', genresResponse)
+    yield put({
+      type: 'SET_GENRES',
+      payload: genresResponse.data
+    });
+  } catch (error) {
+    console.log('fetchGenres error:', error);
   }
 }
 
