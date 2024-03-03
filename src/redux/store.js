@@ -8,6 +8,7 @@ import axios from 'axios';
 function* rootSaga() {
   yield takeEvery('FETCH_MOVIES', fetchAllMovies);
   yield takeEvery('NAVIGATE_TO_DETAILS', handleDetailsNav);
+  yield takeEvery('FETCH_DETAILS', fetchMovieDetails)
 }
 
 function* fetchAllMovies() {
@@ -23,13 +24,15 @@ function* fetchAllMovies() {
     console.log('fetchAllMovies error:', error);
   }
 }
-
-function* handleDetailsNav(action) {
-  const { id } = action.payload;
-  yield put({
-    type: 'DETAILS_GO',
-    payload: { id }
-  })
+function* fetchMovieDetails(action) {
+  try {
+    
+    const response = yield axios.get(`/api/movies/${action.payload}`);
+    console.log('Movie ID:', );
+    yield put({ type: 'SET_MOVIE_DETAILS', payload: response.data })
+  } catch (error) {
+    console.log('fetchMovieDetails error:', error);
+  }
 }
 
 // Create sagaMiddleware
@@ -55,11 +58,33 @@ const genres = (state = [], action) => {
   }
 }
 
+const movieDetails = (state = {}, action) => {
+  switch (action.type) {
+    case 'SET_MOVIE_DETAILS':
+      return action.payload;
+    default:
+      return state;
+  }
+}
+
+function* handleDetailsNav(action) {
+
+  // Dispatch an action to navigate to the details page with the movie ID
+  yield put({
+    type: 'NAVIGATE_TO_MOVIE_DETAILS',
+    payload: action.payload
+  });
+}
+
+
+
+
 // Create one store that all components can use
 const storeInstance = createStore(
   combineReducers({
     movies,
     genres,
+    movieDetails
   }),
   // Add sagaMiddleware to our store
   applyMiddleware(sagaMiddleware, logger),
