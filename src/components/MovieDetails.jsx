@@ -6,7 +6,7 @@ export default function MovieDetails() {
 
   const dispatch = useDispatch();
   const movies = useSelector(store => store.movies);
-  const movieDetails = useSelector(store => store.movieDetails);
+  const movieGenres = useSelector(store => store.genres);
 
   
 
@@ -14,8 +14,7 @@ export default function MovieDetails() {
   const { id } = useParams();
 
   useEffect(() => {
-    dispatch({ type: 'FETCH_DETAILS', payload: id });
-    dispatch({ type: 'FETCH_GENRES' });
+    dispatch({ type: 'FETCH_GENRES', payload: id });
   }, []);
 
   const movie = movies.find(movie => movie.id === Number(id));
@@ -24,15 +23,15 @@ export default function MovieDetails() {
 
 
 
-  console.log('genres', movieDetails)
+  console.log('genres', movieGenres)
 
 
   return (
-    <div data-testid="movieDetails">
+    <div data-testid="movieDetails" key={movie.id}>
       <h2>{movie.title}</h2>
       <p>{movie.description}</p>
       <img src={movie.poster} alt={movie.title} />
-      <p>Genres: {movieDetails.map(genre => {
+      <p>Genres: {movieGenres.map(genre => {
                 return (
                     <>
                     <li key={genre.id}>{genre.name}</li>

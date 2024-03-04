@@ -10,7 +10,7 @@ router.get('/:id', (req, res) => {
   SELECT genres.id, genres.name
   FROM genres
   JOIN movies_genres ON genres.id = movies_genres.genre_id
-  WHERE movies_genres.movie_id = $1;
+  WHERE movies_genres.movie_id = ${movieId};
   `;
   pool.query(queryText)
   .then(result => {

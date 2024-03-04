@@ -36,9 +36,10 @@ function* fetchMovieDetails() {
   }
 }
 
+
 function* fetchGenres(action) {
   try {
-    const genresResponse = yield axios.get(`/api/genres/${action.payload.id}`);
+    const genresResponse = yield axios.get(`/api/genres/${action.payload}`);
     console.log('genres response', genresResponse)
     yield put({
       type: 'SET_GENRES',
@@ -81,6 +82,12 @@ const movieDetails = (state = [], action) => {
   }
 }
 
+const movieGenres = (state = [], action) => {
+  if (action.type === "SET_MOVIE_GENRES"){
+    return action.payload
+  } else return state;
+}
+
 function* handleDetailsNav(action) {
 
   // Dispatch an action to navigate to the details page with the movie ID
@@ -98,7 +105,8 @@ const storeInstance = createStore(
   combineReducers({
     movies,
     genres,
-    movieDetails
+    movieDetails,
+    movieGenres
   }),
   // Add sagaMiddleware to our store
   applyMiddleware(sagaMiddleware, logger),
