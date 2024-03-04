@@ -1,15 +1,15 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import logger from 'redux-logger';
 import createSagaMiddleware from 'redux-saga';
-import { takeEvery, put, select } from 'redux-saga/effects';
+import { takeEvery, put, takeLatest } from 'redux-saga/effects';
 import axios from 'axios';
 
 // Create the rootSaga generator function
 function* rootSaga() {
   yield takeEvery('FETCH_MOVIES', fetchAllMovies);
-  yield takeEvery('NAVIGATE_TO_DETAILS', handleDetailsNav);
-  yield takeEvery('FETCH_DETAILS', fetchMovieDetails);
-  yield takeEvery('FETCH_GENRES', fetchGenres); 
+  yield takeLatest('NAVIGATE_TO_DETAILS', handleDetailsNav);
+  yield takeLatest('FETCH_DETAILS', fetchMovieDetails);
+  yield takeLatest('FETCH_GENRES', fetchGenres); 
 }
 
 function* fetchAllMovies() {
@@ -36,9 +36,9 @@ function* fetchMovieDetails() {
   }
 }
 
-function* fetchGenres() {
+function* fetchGenres(action) {
   try {
-    const genresResponse = yield axios.get('/api/genres');
+    const genresResponse = yield axios.get(`/api/genres/${action.payload.id}`);
     console.log('genres response', genresResponse)
     yield put({
       type: 'SET_GENRES',
@@ -72,7 +72,7 @@ const genres = (state = [], action) => {
   }
 }
 
-const movieDetails = (state = {}, action) => {
+const movieDetails = (state = [], action) => {
   switch (action.type) {
     case 'SET_MOVIE_DETAILS':
       return action.payload;

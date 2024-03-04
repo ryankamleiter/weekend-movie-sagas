@@ -6,7 +6,9 @@ export default function MovieDetails() {
 
   const dispatch = useDispatch();
   const movies = useSelector(store => store.movies);
-  const genres = useSelector(store => store.genres);
+  const movieDetails = useSelector(store => store.movieDetails);
+
+  
 
 
   const { id } = useParams();
@@ -14,7 +16,7 @@ export default function MovieDetails() {
   useEffect(() => {
     dispatch({ type: 'FETCH_DETAILS', payload: id });
     dispatch({ type: 'FETCH_GENRES' });
-  }, [dispatch, id]);
+  }, []);
 
   const movie = movies.find(movie => movie.id === Number(id));
   
@@ -22,7 +24,7 @@ export default function MovieDetails() {
 
 
 
-  console.log('genres', genres)
+  console.log('genres', movieDetails)
 
 
   return (
@@ -30,7 +32,13 @@ export default function MovieDetails() {
       <h2>{movie.title}</h2>
       <p>{movie.description}</p>
       <img src={movie.poster} alt={movie.title} />
-      <p>Genres: Adventure, Drama</p>
+      <p>Genres: {movieDetails.map(genre => {
+                return (
+                    <>
+                    <li key={genre.id}>{genre.name}</li>
+                    </>
+                )
+            })}</p>
       <Link to="/" data-testid="toList">
         Back to Movie List
       </Link>

@@ -2,30 +2,18 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../modules/pool')
 
-router.get('/api/movies/:id', (req, res) => {
+router.get('/:id', (req, res) => {
   // Add query to get all genres
   const movieId = req.params.id;
-  console.log(movieId)
+  console.log('in router get')
   const queryText = `
-    SELECT 
-        movies.id, 
-        movies.title, 
-        movies.poster, 
-        movies.description, 
-        array_agg(genres.name) AS genres
-    FROM 
-        movies
-    LEFT JOIN 
-        movies_genres ON movies.id = movies_genres.movie_id
-    LEFT JOIN 
-        genres ON movies_genres.genre_id = genres.id
-    WHERE 
-        movies.id = $1
-    GROUP BY 
-        movies.id, movies.title, movies.poster, movies.description;
+  SELECT genres.id, genres.name
+  FROM genres
+  JOIN movies_genres ON genres.id = movies_genres.genre_id
+  WHERE movies_genres.movie_id = $1;
   `;
-  pool.query(queryText, [movieId])
-    .then(result => {
+  pool.query(queryText)
+  .then(result => {
       console.log(result.rows)
       res.send(result.rows);
     })
@@ -35,19 +23,6 @@ router.get('/api/movies/:id', (req, res) => {
     });
 });
 
-router.get('/', (req, res) => {
-  const queryText = `
-    SELECT id, name
-    FROM genres;
-  `;
-  pool.query(queryText)
-    .then(result => {
-      res.send(result.rows);
-    })
-    .catch(error => {
-      console.log('Error fetching genres:', error);
-      res.sendStatus(500);
-    });
-});
+
 
 module.exports = router;
